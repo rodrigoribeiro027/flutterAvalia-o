@@ -1,10 +1,6 @@
-// ignore: file_names
 import 'package:flutter/material.dart';
-
 import 'form_graduacao.dart';
 
-
-// ignore: camel_case_types
 class FormularioTecnico extends StatefulWidget {
   final String usuario;
 
@@ -26,7 +22,7 @@ List<dynamic> data = [
 class FormsState extends State<FormularioTecnico> {
   final TextEditingController _usuario;
   final TextEditingController _anoConclusao = TextEditingController();
-  int selecionadoIndex = -1;
+  List<int> selecionadosIndices = [];
 
   FormsState({required String usuario})
       : _usuario = TextEditingController(text: usuario);
@@ -47,10 +43,9 @@ class FormsState extends State<FormularioTecnico> {
             Text('Usuario: ${_usuario.text}',
                 style: const TextStyle(fontSize: 25.0, color: Colors.blue)),
             const SizedBox(height: 50.0),
-            const Text('Selecionar Técnico',
+            const Text('Selecionar Produto',
                 style: TextStyle(fontSize: 25.0, color: Colors.blue)),
             Expanded(
-              // Wrap the ListView.builder with Expanded
               child: Container(
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey, width: 1.0),
@@ -62,15 +57,18 @@ class FormsState extends State<FormularioTecnico> {
                     return GestureDetector(
                       onTap: () {
                         setState(() {
-                          selecionadoIndex =
-                              index; // Atualiza o índice selecionado
+                          if (selecionadosIndices.contains(index)) {
+                            selecionadosIndices.remove(index);
+                          } else {
+                            selecionadosIndices.add(index);
+                          }
                         });
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: selecionadoIndex == index
+                            color: selecionadosIndices.contains(index)
                                 ? Colors.blue
                                 : Colors.grey[200],
                             borderRadius: BorderRadius.circular(8.0),
@@ -96,35 +94,24 @@ class FormsState extends State<FormularioTecnico> {
               ),
             ),
             const SizedBox(height: 10.0),
-            const Text("Ano de conclusão", style: TextStyle(fontSize: 25.0, color: Colors.blue)),
-            const SizedBox(height: 10.0),
-            TextField(
-                controller: _anoConclusao,
-                keyboardType: TextInputType.number,
-                decoration: const  InputDecoration(
-                  hintText: '',
-                  enabledBorder: OutlineInputBorder(
-                    borderSide:  BorderSide(color: Colors.blue),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () {
-                String tecnicoSelecionado = "";
+                List<String> tecnicosSelecionados = [];
 
-                if (selecionadoIndex != -1) {
-                  tecnicoSelecionado = data[selecionadoIndex]["name"];
+                if (selecionadosIndices.isNotEmpty) {
+                  for (int index in selecionadosIndices) {
+                    tecnicosSelecionados.add(data[index]["name"]);
+                  }
                 }
 
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => FormularioGraduacao(
-                        usuario: _usuario.text, tecnico: tecnicoSelecionado),
+                      usuario: _usuario.text,
+                      tecnicos: tecnicosSelecionados,
+                    ),
                   ),
                 );
               },
@@ -139,4 +126,40 @@ class FormsState extends State<FormularioTecnico> {
       ),
     );
   }
+}
+
+// Adicione a classe FormularioGraduacao com os ajustes necessários para aceitar uma lista de técnicos
+class FormularioGraduacao extends StatelessWidget {
+  final String usuario;
+  final List<String> tecnicos;
+
+  const FormularioGraduacao({
+    Key? key,
+    required this.usuario,
+    required this.tecnicos,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Formulário de Graduação'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Usuario: $usuario'),
+            Text('Técnicos Selecionados: ${tecnicos.join(', ')}'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: FormularioTecnico(usuario: 'ExemploUsuario'),
+  ));
 }

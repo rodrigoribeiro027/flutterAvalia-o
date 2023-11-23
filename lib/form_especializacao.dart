@@ -12,7 +12,7 @@ class FormularioEspecializacao extends StatefulWidget {
     Key? key,
     required this.usuario,
     required this.tecnico,
-    required this.graduacao,
+    required this.graduacao, required List<int> quantidades, required List<String> graduacoes,
   }) : super(key: key);
 
   @override

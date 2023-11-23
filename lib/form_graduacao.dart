@@ -128,7 +128,7 @@ class FormsState extends State<FormularioGraduacao> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => FormularioEspecializacao(
-                        usuario: _usuario.text, tecnico: _tecnico.text, graduacao: graduacaoSelecionada),
+                        usuario: _usuario.text, tecnico: _tecnico.text, graduacao: graduacaoSelecionada, quantidades: [], graduacoes: [],),
                   ),
                 );
               },
